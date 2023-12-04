@@ -38,8 +38,17 @@ class OwnerController(val owners: OwnerRepository, val visits: VisitRepository) 
 
     val VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm"
 
+    companion object Logger{
+        private const val MY_ID = "myId"
+        fun log(msg: String){
+            logMsg("$MY_ID $msg")
+        }
+    }
+
+
     @InitBinder
     fun setAllowedFields(dataBinder: WebDataBinder) {
+        log("setAllowedFields")
         dataBinder.setDisallowedFields("id")
     }
 
