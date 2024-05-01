@@ -12,13 +12,13 @@ import org.springframework.samples.petclinic.owner.Owner
 class ViewedOwnersProcessor {
 
     //to instrument with otel methods instrumentation
-    //add environment variable
+    //comment all @WithSpan and add environment variable
     //OTEL_INSTRUMENTATION_METHODS_INCLUDE=
     // org.springframework.samples.petclinic.processors.ViewedOwnersProcessor[processOwners,getOwnerName,filterByName,getExcludeList]
 
     @ExperimentalCoroutinesApi
     @FlowPreview
-//    @WithSpan
+    //@WithSpan
     suspend fun processOwners(owners: Flow<Owner>){
 
         owners
@@ -32,19 +32,19 @@ class ViewedOwnersProcessor {
     }
 
 
-//    @WithSpan
+    //@WithSpan
     private suspend fun getOwnerName(owner: Owner): String {
         delay(100)
         return owner.firstName
     }
 
-//    @WithSpan
+    //@WithSpan
     private suspend fun filterByName(ownerName: String): Boolean {
         delay(100)
         return !getExcludeList().contains(ownerName)
     }
 
-//    @WithSpan
+    //@WithSpan
     private suspend fun getExcludeList():List<String>{
         delay(10)
         return listOf("Carlos")

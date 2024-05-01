@@ -18,10 +18,9 @@ package org.springframework.samples.petclinic.owner
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
 import jakarta.validation.Valid
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import org.springframework.samples.petclinic.processors.SearchHistoryProcessor
 import org.springframework.samples.petclinic.processors.ViewedOwnersProcessor
 import org.springframework.samples.petclinic.visit.VisitRepository
 import org.springframework.stereotype.Controller
@@ -82,9 +81,15 @@ class OwnerController(val owners: OwnerRepository, val visits: VisitRepository) 
         return "owners/findOwners"
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class, DelicateCoroutinesApi::class)
     @GetMapping("/owners")
     fun processFindForm(owner: Owner, result: BindingResult, model: MutableMap<String, Any>): String {
         // find owners by last name
+
+        GlobalScope.launch(Context.current().asContextElement()) {
+            SearchHistoryProcessor().saveToHistory(owner)
+        }
+
         val results = owners.findByLastName(owner.lastName)
         return when {
             results.isEmpty() -> {
