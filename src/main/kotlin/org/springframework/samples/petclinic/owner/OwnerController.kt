@@ -15,6 +15,14 @@
  */
 package org.springframework.samples.petclinic.owner
 
+import io.opentelemetry.context.Context
+import io.opentelemetry.extension.kotlin.asContextElement
+import jakarta.validation.Valid
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import org.springframework.samples.petclinic.processors.ViewedOwnersProcessor
 import org.springframework.samples.petclinic.visit.VisitRepository
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -24,7 +32,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.InitBinder
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import jakarta.validation.Valid
 
 /**
  * @author Juergen Hoeller
@@ -90,6 +97,16 @@ class OwnerController(val owners: OwnerRepository, val visits: VisitRepository) 
                 "redirect:/owners/" + results.first().id
             }
             else -> {
+
+                GlobalScope.launch(Context.current().asContextElement()) {
+                    ViewedOwnersProcessor().processOwners(flow {
+                        results.forEach {
+                            delay(1000)
+                            emit(it)
+                        }
+                    })
+                }
+
                 // multiple owners found
                 model["selections"] = results
                 "owners/ownersList"

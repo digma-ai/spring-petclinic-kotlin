@@ -52,6 +52,14 @@ dependencies {
     implementation("org.webjars.npm:bootstrap:$boostrapVersion")
     implementation("org.webjars.npm:font-awesome:$fontAwesomeVersion")
 
+    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:1.33.2")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:1.33.2")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("io.opentelemetry:opentelemetry-api")
+    implementation("io.opentelemetry:opentelemetry-extension-kotlin")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.3")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
