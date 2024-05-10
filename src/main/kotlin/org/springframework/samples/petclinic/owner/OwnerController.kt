@@ -20,8 +20,7 @@ import io.opentelemetry.extension.kotlin.asContextElement
 import jakarta.validation.Valid
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
-import org.springframework.samples.petclinic.processors.SearchHistoryProcessor
-import org.springframework.samples.petclinic.processors.ViewedOwnersProcessor
+import org.springframework.samples.petclinic.processors.*
 import org.springframework.samples.petclinic.visit.VisitRepository
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -85,6 +84,16 @@ class OwnerController(val owners: OwnerRepository, val visits: VisitRepository) 
     @GetMapping("/owners")
     fun processFindForm(owner: Owner, result: BindingResult, model: MutableMap<String, Any>): String {
         // find owners by last name
+
+        //print all injected annotations, also see that classes are transformed only here when first loaded
+        //the exclude list is:
+        //ReflectionUtils;MyClassShouldNotBeTransformed;MyClassPartiallyTransformed.doNotAnnotate;*excludedWithPattern
+        ReflectionUtils.printClassAnnotations(ReflectionUtils) //should not be transformed
+        ReflectionUtils.printClassAnnotations(MyClassShouldNotBeTransformed::class.java) //should not be transformed
+        ReflectionUtils.printClassAnnotations(MyClassPartiallyTransformed::class.java) //partially transformed, only some methods
+        ReflectionUtils.printClassAnnotations(SearchHistoryProcessor::class.java) //should be transformed and not fail on duplicate annotation because already has @WithSpan
+        ReflectionUtils.printClassAnnotations(ViewedOwnersProcessor::class.java)  //should be transformed
+
 
         GlobalScope.launch(Context.current().asContextElement()) {
             SearchHistoryProcessor().saveToHistory(owner)

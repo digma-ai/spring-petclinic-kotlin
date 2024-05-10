@@ -1,6 +1,11 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="spring-petclinic-kotlin [bootRun]" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
+      <option name="env">
+        <map>
+          <entry key="OTEL_RESOURCE_ATTRIBUTES" value="digma.environment.id=KT-TEST1#ID#8A28E291-6314-45B9-8124-39122EBED96B" />
+        </map>
+      </option>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
