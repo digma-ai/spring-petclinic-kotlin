@@ -1,12 +1,7 @@
 package org.springframework.samples.petclinic.processors
 
-import io.opentelemetry.instrumentation.annotations.WithSpan
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.mapNotNull
 import org.springframework.samples.petclinic.owner.Owner
 
 class ViewedOwnersProcessor {
@@ -17,37 +12,51 @@ class ViewedOwnersProcessor {
     //OTEL_INSTRUMENTATION_METHODS_INCLUDE=
     // org.springframework.samples.petclinic.processors.ViewedOwnersProcessor[processOwners,getOwnerName,filterByName,getExcludeList]
 
-    @ExperimentalCoroutinesApi
-    @FlowPreview
-//    @WithSpan
-    suspend fun processOwners(owners: Flow<Owner>){
+    //    @ExperimentalCoroutinesApi
+//    @FlowPreview
+    suspend fun processOwners(owners: Flow<Owner>, name: String) {
+
+        println("in processOwners, t=" + Thread.currentThread().name)
+
+        doSomething(name)
 
         owners
-            .mapNotNull {
+            .mapNotNull(name = "MyMapNotNullName") {
+                delay(100)
+                println("in mapNotNull lambda,owner:${it.firstName} ${it.lastName}, t=" + Thread.currentThread().name)
                 getOwnerName(it)
             }
-            .filter { filterByName(it) }
-            .collect{
+            .filter(name = "MyFilterName") {
+                delay(100)
+                println("in filter lambda, name:$it, t=" + Thread.currentThread().name)
+                filterByName(it)
+            }
+            .collect {
+                delay(100)
+                println("in collect lambda, name:$it, t=" + Thread.currentThread().name)
                 println("found $it at ${kotlinx.datetime.Clock.System.now()}")
             }
     }
 
+    private fun doSomething(name: String) {
+        println("in doSomething, t=" + Thread.currentThread().name)
+    }
 
-//    @WithSpan
+
     suspend fun getOwnerName(owner: Owner): String {
         delay(100)
         return owner.firstName
     }
 
-//    @WithSpan
     suspend fun filterByName(ownerName: String): Boolean {
         delay(100)
+        println("in filterByName, name:$ownerName, t=" + Thread.currentThread().name)
         return !getExcludeList().contains(ownerName)
     }
 
-//    @WithSpan
-    suspend fun getExcludeList():List<String>{
+    suspend fun getExcludeList(): List<String> {
         delay(10)
+        println("in getExcludeList, t=" + Thread.currentThread().name)
         return listOf("Carlos")
     }
 

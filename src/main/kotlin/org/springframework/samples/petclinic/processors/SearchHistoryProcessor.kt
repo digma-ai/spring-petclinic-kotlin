@@ -19,14 +19,16 @@ class SearchHistoryProcessor {
     // are not valid bytecode
     @WithSpan(value = "my span name")
     suspend fun saveToHistory(owner: Owner):Boolean {
+        println("in saveToHistory")
         return saveOwnerToHistory(owner)
     }
 
     @Nullable // just check that it still exists after transformation
 //    @WithSpan
     suspend fun saveOwnerToHistory( @Nullable owner: Owner):Boolean  {
+        println("before delay saving ${owner.firstName} ${owner.lastName}  to history")
         delay(100)
-        println("saving ${owner.firstName}  to history")
+        println("after delay saving ${owner.firstName} ${owner.lastName}  to history")
         return true
     }
 

@@ -21,6 +21,7 @@ import jakarta.validation.Valid
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
 import org.springframework.samples.petclinic.processors.*
+import org.springframework.samples.petclinic.testpkg.MyTestClass
 import org.springframework.samples.petclinic.visit.VisitRepository
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -45,15 +46,15 @@ class OwnerController(val owners: OwnerRepository, val visits: VisitRepository) 
 
     companion object Logger{
         private const val MY_ID = "myId"
-        fun log(msg: String){
-            logMsg("$MY_ID $msg")
-        }
+//        fun log(msg: String){
+//            logMsg("$MY_ID $msg")
+//        }
     }
 
 
     @InitBinder
     fun setAllowedFields(dataBinder: WebDataBinder) {
-        log("setAllowedFields")
+//        log("setAllowedFields")
         dataBinder.setDisallowedFields("id")
     }
 
@@ -93,6 +94,12 @@ class OwnerController(val owners: OwnerRepository, val visits: VisitRepository) 
         ReflectionUtils.printClassAnnotations(MyClassPartiallyTransformed::class.java) //partially transformed, only some methods
         ReflectionUtils.printClassAnnotations(SearchHistoryProcessor::class.java) //should be transformed and not fail on duplicate annotation because already has @WithSpan
         ReflectionUtils.printClassAnnotations(ViewedOwnersProcessor::class.java)  //should be transformed
+        ReflectionUtils.printClassAnnotations(MyTestClass::class.java)
+
+        val myTestClass = MyTestClass()
+        myTestClass.myTestMethod1()
+        myTestClass.myTestMethod2()
+
 
 
         GlobalScope.launch(Context.current().asContextElement()) {
@@ -116,9 +123,10 @@ class OwnerController(val owners: OwnerRepository, val visits: VisitRepository) 
                     ViewedOwnersProcessor().processOwners(flow {
                         results.forEach {
                             delay(1000)
+                            println("in results.forEach owner:${it.firstName} ${it.lastName},  t=${Thread.currentThread().name}")
                             emit(it)
                         }
-                    })
+                    },"my process owners")
                 }
 
                 // multiple owners found
